@@ -1,46 +1,26 @@
-# Getting Started with Create React App
+# Lijstje
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+'Lijstje' is the most dynamic shopping list you can imagine. It gives users the ability to easily create and share shopping lists, for example for the weekly groceries. Need something from the store? Add it to your shared list and the person running the errands will be notified!
 
-## Available Scripts
+# Why?
 
-In the project directory, you can run:
+This application has been built for fun. To try out technologies I am familiar and unfamiliar with. To see what I am capable of building. This application is also a request from my family to better manage the grocery requests from everyone.
 
-### `npm start`
+I know little about backend development. I am fimiliar with expressjs technologies I use for this project, but other backend concepts are not of my expertise (yet). This means there might be some fundamental flaws regarding the backend, but I will try my best.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+# Quickstart
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+In order to check out the application yourself, follow the steps below:
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- Install dependencies: 
+    - ``npm install``
+    - Install all dependencies needed to build and start the application
+- Run the frontend application
+    - ``cd app``
+    - ``npm start``
+    - This will start the application locally in your browser
+- Build and deploy the backend application to the development environment
+    - ``cd server``
+    - ``npm run deploy:dev``
+    - This will deploy the dev Lambda. To deploy the prod Lambda:
+    - ``npm run deploy:prod``

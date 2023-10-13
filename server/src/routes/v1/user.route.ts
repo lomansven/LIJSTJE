@@ -1,11 +1,11 @@
 import { Request, Response, Router } from 'express';
-import { CreateUser } from '../../database/operations/user.operations';
+import { CreateUser, RetrieveUser } from '../../database/operations/user.operations';
 import { LijstjeError } from '../../lijstjeError';
-import { IUser } from '../../database/entities/user.entity';
+import { comparePassword, hashPassword, processError } from '../../utils';
 
 const router = Router();
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', async (_req: Request, res: Response) => {
   try {
     res.status(200).send("Welcome to the Lijstje backend API!");
   } catch (error) {
@@ -21,7 +21,15 @@ router.post('/register', async (req: Request, res: Response) => {
     if (!name || !email || !password) {
       throw new LijstjeError({
         status: 400,
-        message: "Username and/or password was not provided."
+        message: "Request body is missing required data.",
+      });
+    }
+    // Check if email is already in use
+    const existingUser = await RetrieveUser({ email });
+    if (existingUser) {
+      throw new LijstjeError({
+        status: 400,
+        message: "Email already in use."
       });
     }
     // Create user with provided username and password
@@ -38,9 +46,36 @@ router.post('/register', async (req: Request, res: Response) => {
       createdAt: user._createdAt
     });
   } catch (error) {
-    // Parse & respond with error
-    const { status, message } = error as LijstjeError;
-    res.status(status ? status : 500).json(message ? message : error);
+    // Process error
+    processError(res, error);
+  }
+});
+
+router.post('/login', async (req: Request, res: Response) => {
+  try {
+    // Parse & check request body
+    const { email, password } = req.body;
+    if (!email || !password) {
+      throw new LijstjeError({
+        status: 400,
+        message: "Request body is missing required data.",
+      });
+    }
+    // Retrieve user from db & check if received password matches one in db
+    const user = await RetrieveUser({ email });
+    if (user && comparePassword(password, user.password)) {
+      // User exists && password is correct
+      res.status(200).json("Logged in successfully. TODO: return token...");
+    } else {
+      // User not found or password is incorrect
+      throw new LijstjeError({
+        status: 401,
+        message: "Incorrect email and/or password provided."
+      });
+    }
+  } catch (error) {
+    // Process error
+    processError(res, error);
   }
 });
 

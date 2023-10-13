@@ -15,6 +15,8 @@
     "@typedorm/common": "^1.15.4",
     "@typedorm/core": "^1.15.4",
     "@typedorm/document-client": "^1.15.4",
+    "@types/bcryptjs": "^2.4.4",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "dynamoose": "^3.2.1",
@@ -28,6 +30,7 @@
     "@types/express": "^4.17.17",
     "@types/uuid": "^9.0.4",
     "rimraf": "^5.0.1",
+    "serverless": "^3.35.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   }

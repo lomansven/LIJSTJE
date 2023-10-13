@@ -1,6 +1,7 @@
 type LijstjeErrorProps = {
     status: number;
     message: string;
+    receivedInput?: string;
 }
 
 /**

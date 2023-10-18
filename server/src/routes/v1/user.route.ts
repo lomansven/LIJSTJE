@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
-import { CreateUser, RetrieveUser } from '../../database/operations/user.operations';
+import { CreateUser, RetrieveUserByEmail, UpdateUser } from '../../database/operations/user.operations';
 import { LijstjeError } from '../../lijstjeError';
-import { comparePassword, hashPassword, processError } from '../../utils';
+import { comparePassword, processError } from '../../utils';
 
 const router = Router();
 
@@ -25,7 +25,7 @@ router.post('/register', async (req: Request, res: Response) => {
       });
     }
     // Check if email is already in use
-    const existingUser = await RetrieveUser({ email });
+    const existingUser = await RetrieveUserByEmail(email);
     if (existingUser) {
       throw new LijstjeError({
         status: 400,
@@ -62,7 +62,7 @@ router.post('/login', async (req: Request, res: Response) => {
       });
     }
     // Retrieve user from db & check if received password matches one in db
-    const user = await RetrieveUser({ email });
+    const user = await RetrieveUserByEmail(email);
     if (user && comparePassword(password, user.password)) {
       // User exists && password is correct
       res.status(200).json("Logged in successfully. TODO: return token...");
@@ -75,6 +75,32 @@ router.post('/login', async (req: Request, res: Response) => {
     }
   } catch (error) {
     // Process error
+    processError(res, error);
+  }
+});
+
+router.put('/update', async (req: Request, res: Response) => {
+  try {
+    // Parse & check request body
+    const { _id, email, name, password } = req.body;
+    if (!_id) {
+      throw new LijstjeError({
+        status: 400,
+        message: "User _id not provided, cannot update an unknown User."
+      });
+    }
+    if (!email && !name && !password) {
+      throw new LijstjeError({
+        status: 400,
+        message: "Request body is missing required data.",
+      });
+    }
+    // Update User using provided data
+    const updatedUser = await UpdateUser({ _id, email, name, password });
+    // Respond with updated User
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    // Process LijstjeError/generic error
     processError(res, error);
   }
 });

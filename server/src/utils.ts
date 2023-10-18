@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { LijstjeError } from "./lijstjeError";
 import bcrypt from "bcryptjs";
+import { pickBy } from 'lodash';
 
 const BCRYPT_SALT_ROUNDS = 12;
 
@@ -23,4 +24,8 @@ export function hashPassword(password: string) {
 
 export function comparePassword(plainPassword: string, hashedPassword: string) {
   return bcrypt.compareSync(plainPassword, hashedPassword);
+}
+
+export function omitUndefined(object: object) {
+  return pickBy(object, (x) => x !== undefined);
 }

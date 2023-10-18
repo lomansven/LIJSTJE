@@ -23,6 +23,8 @@ export const BaseEntitySchemaDefinition: SchemaDefinition = {
     }
 }
 export const BaseEntitySchemaSettings: any = {
-    createdAt: "_createdAt",
-    updatedAt: "_updatedAt"
+    timestamps: {
+        createdAt: "_createdAt",
+        updatedAt: "_updatedAt"
+    }
 }

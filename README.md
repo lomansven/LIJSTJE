@@ -13,14 +13,17 @@ I know little about backend development. I am fimiliar with expressjs technologi
 In order to check out the application yourself, follow the steps below:
 
 - Install dependencies: 
-    - ``npm install``
-    - Install all dependencies needed to build and start the application
+
 - Run the frontend application
     - ``cd app``
+    - ``npm install``
+    - Install all (dev-)dependencies needed to build and start the application
     - ``npm start``
     - This will start the application locally in your browser
 - Build and deploy the backend application to the development environment
-    - ``cd server``
+    - ``cd server`` / ``cd ../server``
+    - ``npm install``
+    - Install all (dev-)dependencies needed to build and start the application
     - ``npm run deploy:dev``
     - This will deploy the dev Lambda. To deploy the prod Lambda:
     - ``npm run deploy:prod``

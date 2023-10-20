@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import { CreateUser, RetrieveAllUsersTemp, RetrieveUserByEmail, UpdateUser } from '../../database/operations/user.operations';
+import { CreateUser, DeleteUser, RetrieveAllUsers, RetrieveUser, UpdateUser } from '../../database/operations/user.operations';
 import { LijstjeError } from '../../lijstjeError';
 import { comparePassword, processError } from '../../utils';
 
@@ -7,11 +7,11 @@ const router = Router();
 
 router.get('/', async (_req: Request, res: Response) => {
   try {
-    const users = await RetrieveAllUsersTemp();
+    const users = await RetrieveAllUsers();
     res.status(200).send(users);
   } catch (error) {
-    console.error('An error ocurred:', error);
-    res.status(500).json(error);
+    // Process LijstjeError/generic error
+    processError(res, error);
   }
 });
 
@@ -26,7 +26,7 @@ router.post('/register', async (req: Request, res: Response) => {
       });
     }
     // Check if email is already in use
-    const existingUser = await RetrieveUserByEmail(email);
+    const existingUser = await RetrieveUser({ email }, true);
     if (existingUser) {
       throw new LijstjeError({
         status: 400,
@@ -47,7 +47,7 @@ router.post('/register', async (req: Request, res: Response) => {
       createdAt: user._createdAt
     });
   } catch (error) {
-    // Process error
+    // Process LijstjeError/generic error
     processError(res, error);
   }
 });
@@ -63,7 +63,7 @@ router.post('/login', async (req: Request, res: Response) => {
       });
     }
     // Retrieve user from db & check if received password matches one in db
-    const user = await RetrieveUserByEmail(email);
+    const user = await RetrieveUser({ email }, true);
     if (user && comparePassword(password, user.password)) {
       // User exists && password is correct
       res.status(200).json("Logged in successfully. TODO: return token...");
@@ -75,7 +75,7 @@ router.post('/login', async (req: Request, res: Response) => {
       });
     }
   } catch (error) {
-    // Process error
+    // Process LijstjeError/generic error
     processError(res, error);
   }
 });
@@ -100,6 +100,26 @@ router.put('/update', async (req: Request, res: Response) => {
     const updatedUser = await UpdateUser({ _id, email, name, password });
     // Respond with updated User
     res.status(200).json(updatedUser);
+  } catch (error) {
+    // Process LijstjeError/generic error
+    processError(res, error);
+  }
+});
+
+router.delete('/delete', async (req: Request, res: Response) => {
+  try {
+    const { _id } = req.body;
+    if (!_id) {
+      throw new LijstjeError({
+        status: 400,
+        message: "User _id not provided, cannot delete an unknown User."
+      });
+    }
+    // Delete the User
+    await DeleteUser(_id);
+    // DeleteUser throws an error on failure, error will be caught & responded accordingly
+    // At this point User should be deleted succesfully
+    res.status(200).json("User deleted succesfully");
   } catch (error) {
     // Process LijstjeError/generic error
     processError(res, error);

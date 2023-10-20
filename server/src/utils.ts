@@ -2,8 +2,7 @@ import { Response } from 'express';
 import { LijstjeError } from "./lijstjeError";
 import bcrypt from "bcryptjs";
 import { pickBy } from 'lodash';
-
-const BCRYPT_SALT_ROUNDS = 12;
+import { BCRYPT_SALT_ROUNDS } from './constants';
 
 export function processError(res: Response, error: any) {
     // Parse & respond with error

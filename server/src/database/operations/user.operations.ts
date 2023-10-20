@@ -2,10 +2,21 @@ import { LijstjeError } from "../../lijstjeError";
 import { hashPassword, omitUndefined } from "../../utils";
 import { IUser, User } from "../entities/user.entity";
 
+/**
+ * Operation to retrieve all Users from database
+ * @returns Obfuscated User list
+ */
 export async function RetrieveAllUsers(): Promise<IUser[]> {
     return User.scan().attributes(["email","name","_createdAt"]).all().exec();
 }
 
+/**
+ * Operation to retrieve a single User by a query on a single attribute
+ * @param query Query to retrieve user by a single attribute
+ * @param allowUndefined Boolean to determine whether operation may return undefined if User is not found or throw an error if User is not found
+ * @returns User or undefined based on ``allowUndefined``
+ * @throws LijstjeError if invalid query was provided, or if User does not exist (based on ``allowUndefined``)
+ */
 export async function RetrieveUser(query: any, allowUndefined: boolean | undefined = false): Promise<IUser | undefined> {
     try {
         // Get first key from query object, will be used to find User (example: _id / email)
@@ -34,11 +45,18 @@ export async function RetrieveUser(query: any, allowUndefined: boolean | undefin
     }
 }
 
+/** Data to be provided for CreateUser operation */
 type CreateUserProps = {
     name: string;
     email: string;
     password: string;
 }
+/**
+ * Creates a single User entity based on provided data
+ * @param props Required data to create User entity
+ * @returns New User entity
+ * @throws LijstjeError if creating User fails
+ */
 export async function CreateUser(props: CreateUserProps): Promise<IUser> {
     try {
         // Hash password
@@ -54,12 +72,19 @@ export async function CreateUser(props: CreateUserProps): Promise<IUser> {
     }
 }
 
+/** Data to be provided for UpdateUser operation */
 type UpdateUserProps = {
     _id: string;
     name?: string;
     email?: string;
     password?: string;
 }
+/**
+ * Updates single User entity using provided datas
+ * @param props Data to identify and update User entity
+ * @returns Updated User
+ * @throws LijstjeError if User does not exist
+ */
 export async function UpdateUser(props: UpdateUserProps): Promise<IUser> {
     try {
         // Assert user exists (throws an error otherwise so can cast to IUser)
@@ -79,6 +104,12 @@ export async function UpdateUser(props: UpdateUserProps): Promise<IUser> {
     }
 }
 
+/**
+ * Deletes single User entity based on provided id
+ * @param _id Id to identify User that must be deleted
+ * @returns Deletion result
+ * @throws LijstjeError if User is not found
+ */
 export async function DeleteUser(_id: string): Promise<void> {
     try {
         // Assert user exists (throws an error otherwise)

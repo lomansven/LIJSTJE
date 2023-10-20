@@ -18,6 +18,10 @@ export async function CreateUser(props: CreateUserProps) {
     });
 }
 
+export async function RetrieveAllUsersTemp() {
+    return User.scan().attributes(["_id","email","name","_createdAt"]).all().exec();
+}
+
 export async function RetrieveUserByEmail(email: string) {
     return (await User.scan("email").eq(email).exec()).pop();
 }

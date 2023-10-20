@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import { CreateUser, RetrieveUserByEmail, UpdateUser } from '../../database/operations/user.operations';
+import { CreateUser, RetrieveAllUsersTemp, RetrieveUserByEmail, UpdateUser } from '../../database/operations/user.operations';
 import { LijstjeError } from '../../lijstjeError';
 import { comparePassword, processError } from '../../utils';
 
@@ -7,7 +7,8 @@ const router = Router();
 
 router.get('/', async (_req: Request, res: Response) => {
   try {
-    res.status(200).send("Welcome to the Lijstje backend API!");
+    const users = await RetrieveAllUsersTemp();
+    res.status(200).send(users);
   } catch (error) {
     console.error('An error ocurred:', error);
     res.status(500).json(error);

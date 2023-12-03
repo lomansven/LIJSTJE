@@ -7,7 +7,7 @@ import { IUser, User } from "../entities/user.entity";
  * @returns Obfuscated User list
  */
 export async function RetrieveAllUsers(): Promise<IUser[]> {
-    return User.scan().attributes(["email","name","_createdAt"]).all().exec();
+    return User.scan().attributes(["_id","email","name","_createdAt"]).all().exec();
 }
 
 /**
@@ -30,6 +30,7 @@ export async function RetrieveUser(query: any, allowUndefined: boolean | undefin
         }
         // If valid key and value are provided, retrieve User by that data
         const user = (await User.scan(key).eq(value).exec()).pop();
+        // const user = (await User.scan(key).eq(value).attributes(["_id","email","name","_createdAt"]).exec()).pop();
         if (!user && !allowUndefined) {
             // Throw an error if allowed & user not found, will be caught in request
             throw new LijstjeError({

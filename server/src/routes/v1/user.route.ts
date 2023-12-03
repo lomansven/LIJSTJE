@@ -1,10 +1,12 @@
 import { Request, Response, Router } from 'express';
 import { CreateUser, DeleteUser, RetrieveAllUsers, RetrieveUser, UpdateUser } from '../../database/operations/user.operations';
 import { LijstjeError } from '../../lijstjeError';
-import { comparePassword, processError } from '../../utils';
+import { comparePassword, generateLoginToken, processError } from '../../utils';
+import { Authentication } from '../../middleware';
 
 const router = Router();
 
+/** /v1/user/ */
 router.get('/', async (_req: Request, res: Response) => {
   try {
     const users = await RetrieveAllUsers();
@@ -15,6 +17,7 @@ router.get('/', async (_req: Request, res: Response) => {
   }
 });
 
+/** /v1/user/register */
 router.post('/register', async (req: Request, res: Response) => {
   try {
     // Parse & check request body
@@ -30,7 +33,7 @@ router.post('/register', async (req: Request, res: Response) => {
     if (existingUser) {
       throw new LijstjeError({
         status: 400,
-        message: "Email already in use."
+        message: "Email not available."
       });
     }
     // Create user with provided username and password
@@ -52,6 +55,7 @@ router.post('/register', async (req: Request, res: Response) => {
   }
 });
 
+/** /v1/user/login */
 router.post('/login', async (req: Request, res: Response) => {
   try {
     // Parse & check request body
@@ -66,7 +70,8 @@ router.post('/login', async (req: Request, res: Response) => {
     const user = await RetrieveUser({ email }, true);
     if (user && comparePassword(password, user.password)) {
       // User exists && password is correct
-      res.status(200).json("Logged in successfully. TODO: return token...");
+      const token = generateLoginToken(user._id);
+      res.status(200).json({ token });
     } else {
       // User not found or password is incorrect
       throw new LijstjeError({
@@ -80,14 +85,16 @@ router.post('/login', async (req: Request, res: Response) => {
   }
 });
 
-router.put('/update', async (req: Request, res: Response) => {
+/** /v1/user/update */
+router.put('/update', Authentication, async (req: Request, res: Response) => {
   try {
-    // Parse & check request body
-    const { _id, email, name, password } = req.body;
+    // Parse & check request body and headers
+    const { email, name, password } = req.body;
+    const _id = req.headers.userId as string;
     if (!_id) {
       throw new LijstjeError({
         status: 400,
-        message: "User _id not provided, cannot update an unknown User."
+        message: "User _id not found, cannot update an unknown User."
       });
     }
     if (!email && !name && !password) {
@@ -97,7 +104,8 @@ router.put('/update', async (req: Request, res: Response) => {
       });
     }
     // Update User using provided data
-    const updatedUser = await UpdateUser({ _id, email, name, password });
+    await UpdateUser({ _id, email, name, password });
+    const updatedUser = await RetrieveUser({ _id });
     // Respond with updated User
     res.status(200).json(updatedUser);
   } catch (error) {
@@ -106,20 +114,23 @@ router.put('/update', async (req: Request, res: Response) => {
   }
 });
 
-router.delete('/delete', async (req: Request, res: Response) => {
+/** /v1/user/delete */
+router.delete('/delete', Authentication, async (req: Request, res: Response) => {
   try {
-    const { _id } = req.body;
+    const _id = req.headers.userId as string;
     if (!_id) {
       throw new LijstjeError({
         status: 400,
-        message: "User _id not provided, cannot delete an unknown User."
+        message: "User _id not found, cannot delete an unknown User."
       });
     }
     // Delete the User
     await DeleteUser(_id);
     // DeleteUser throws an error on failure, error will be caught & responded accordingly
     // At this point User should be deleted succesfully
-    res.status(200).json("User deleted succesfully");
+    res.status(200).json({
+      message: "User deleted succesfully."
+    });
   } catch (error) {
     // Process LijstjeError/generic error
     processError(res, error);

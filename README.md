@@ -8,6 +8,8 @@ This application has been built for fun. To try out technologies I am familiar a
 
 I know little about backend development. I am fimiliar with expressjs technologies I use for this project, but other backend concepts are not of my expertise (yet). This means there might be some fundamental flaws regarding the backend, but I will try my best.
 
+Good chance though that I get an idea for another app and work on that rather than this, we shall see ;)
+
 # Quickstart
 
 In order to check out the application yourself, follow the steps below:
